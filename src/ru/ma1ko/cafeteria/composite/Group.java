@@ -33,14 +33,20 @@ public final class Group implements Node {
 
     @Override
     public BigDecimal cost() {
-        return nodeList.stream()
-                .map(Node::cost)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Node node : nodeList) {
+            total = total.add(node.cost());
+        }
+        return total;
     }
 
     @Override
     public int count() {
-        return nodeList.stream().mapToInt(Node::count).sum();
+        int total = 0;
+        for (Node node : nodeList) {
+            total += node.count();
+        }
+        return total;
     }
 
     @Override

@@ -5,7 +5,7 @@
 package ru.ma1ko.cafeteria.domain;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public enum DrinkType {
@@ -50,8 +50,12 @@ public enum DrinkType {
     }
 
     public static List<DrinkType> byArea(Area area) {
-        return Arrays.stream(values())
-                .filter(type -> type.area == area)
-                .toList();
+        List<DrinkType> result = new ArrayList<>();
+        for (DrinkType type : values()) {
+            if (type.area == area) {
+                result.add(type);
+            }
+        }
+        return result;
     }
 }
