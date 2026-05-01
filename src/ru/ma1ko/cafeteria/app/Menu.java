@@ -86,9 +86,8 @@ public final class Menu {
                         3. Лимонады
                         4. Матча
                         5. Чай
-                        6. Сиропы
                         0. Назад""",
-                EXIT, 6
+                EXIT, 5
         );
 
         switch (section) {
@@ -97,7 +96,6 @@ public final class Menu {
             case 3 -> addLemonade();
             case 4 -> addMatcha();
             case 5 -> addTea();
-            case 6 -> addStandaloneSyrup();
             default -> {
             }
         }
@@ -273,34 +271,6 @@ public final class Menu {
         );
     }
 
-    private void addStandaloneSyrup() {
-        int syrup = input.choice("""
-                Сиропы:
-                1. Карамель
-                2. Солёная карамель
-                3. Вишня
-                4. Банан
-                5. Лесной орех
-                6. Шоколад
-                0. Назад""",
-                EXIT, 6);
-        if (syrup == EXIT) {
-            return;
-        }
-        int count = input.choice("Количество сиропа (1-10):", 1, Limit.MAX_SUGAR);
-
-        final int selectedSyrup = syrup;
-        final int selectedCount = count;
-        addCustomDrink(
-                "Сироп",
-                Area.SYRUPS,
-                new BigDecimal("0.00"),
-                true,
-                false,
-                builder -> builder.syrup(SYRUP_OPTIONS.get(selectedSyrup - 1), selectedCount)
-        );
-    }
-
     private void addBumble() {
         int juice = input.choice("""
                 Бамбл:
@@ -351,11 +321,6 @@ public final class Menu {
         applyFactoryIfNeeded(askProducer);
         configureSweetnessAndSyrup(true);
         orderBuilder.addDrink(drinkBuilder.build());
-    }
-
-    private void addCustomDrink(String name, Area area, BigDecimal cost, boolean askProducer, boolean allowSweetener) {
-        addCustomDrink(name, area, cost, askProducer, allowSweetener, builder -> {
-        });
     }
 
     private void addCustomDrink(String name, Area area, BigDecimal cost, boolean askProducer, boolean allowSweetener, java.util.function.Consumer<DrinkBuilder> customizer) {
