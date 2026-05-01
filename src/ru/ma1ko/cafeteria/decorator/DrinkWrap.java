@@ -41,11 +41,6 @@ public abstract class DrinkWrap implements Drink {
         return drink.description();
     }
 
-    @Override
-    public Drink addSugar() {
-        return new Sugar(this);
-    }
-
     protected Drink drink() {
         return drink;
     }

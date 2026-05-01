@@ -49,13 +49,4 @@ public enum DrinkType {
         return cost;
     }
 
-    public static List<DrinkType> byArea(Area area) {
-        List<DrinkType> result = new ArrayList<>();
-        for (DrinkType type : values()) {
-            if (type.area == area) {
-                result.add(type);
-            }
-        }
-        return result;
-    }
 }

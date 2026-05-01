@@ -15,7 +15,6 @@ import ru.ma1ko.cafeteria.strategy.PriceStrategy;
 import ru.ma1ko.cafeteria.strategy.StandardStrategy;
 import ru.ma1ko.cafeteria.util.Money;
 
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -80,12 +79,6 @@ public final class OrderBuilder {
 
     public String strategyName() {
         return strategy.name();
-    }
-
-    public void show(PrintStream out) {
-        out.println(currentText());
-        out.println("Итого: " + Money.format(totalCost()));
-        out.println("Позиций: " + itemCount());
     }
 
     private void notifyObservers(String event) {

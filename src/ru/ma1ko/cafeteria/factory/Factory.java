@@ -5,10 +5,12 @@
 package ru.ma1ko.cafeteria.factory;
 
 import ru.ma1ko.cafeteria.decorator.Drink;
-import ru.ma1ko.cafeteria.domain.DrinkType;
+import ru.ma1ko.cafeteria.domain.Area;
+
+import java.math.BigDecimal;
 
 public interface Factory {
     String producerName();
 
-    Drink create(DrinkType type);
+    Drink create(String name, Area area, BigDecimal cost);
 }

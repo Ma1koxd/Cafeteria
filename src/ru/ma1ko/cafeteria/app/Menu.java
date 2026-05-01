@@ -11,13 +11,13 @@ import ru.ma1ko.cafeteria.domain.DrinkType;
 import ru.ma1ko.cafeteria.observer.CostObs;
 import ru.ma1ko.cafeteria.observer.DetailObs;
 import ru.ma1ko.cafeteria.strategy.BulkStrategy;
-import ru.ma1ko.cafeteria.strategy.EconomyProducerStrategy;
 import ru.ma1ko.cafeteria.strategy.PriceStrategy;
-import ru.ma1ko.cafeteria.strategy.ProducerStrategy;
-import ru.ma1ko.cafeteria.strategy.QualityProducerStrategy;
 import ru.ma1ko.cafeteria.strategy.StandardStrategy;
 import ru.ma1ko.cafeteria.util.Limit;
 import ru.ma1ko.cafeteria.util.Money;
+import ru.ma1ko.cafeteria.factory.EconomyFactory;
+import ru.ma1ko.cafeteria.factory.Factory;
+import ru.ma1ko.cafeteria.factory.QualityFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -348,7 +348,7 @@ public final class Menu {
 
     private void addConfiguredDrink(DrinkType drinkType, boolean askProducer) {
         drinkBuilder.type(drinkType);
-        applyProducerIfNeeded(askProducer);
+        applyFactoryIfNeeded(askProducer);
         configureSweetnessAndSyrup(true);
         orderBuilder.addDrink(drinkBuilder.build());
     }
@@ -360,24 +360,24 @@ public final class Menu {
 
     private void addCustomDrink(String name, Area area, BigDecimal cost, boolean askProducer, boolean allowSweetener, java.util.function.Consumer<DrinkBuilder> customizer) {
         drinkBuilder.custom(name, area, cost);
-        applyProducerIfNeeded(askProducer);
+        applyFactoryIfNeeded(askProducer);
         customizer.accept(drinkBuilder);
         configureSweetnessAndSyrup(allowSweetener);
         orderBuilder.addDrink(drinkBuilder.build());
     }
 
-    private void applyProducerIfNeeded(boolean askProducer) {
+    private void applyFactoryIfNeeded(boolean askProducer) {
         if (!askProducer) {
             return;
         }
-        ProducerStrategy producerStrategy = selectProducerForDrink();
-        if (producerStrategy == null) {
+        Factory factory = selectFactoryForDrink();
+        if (factory == null) {
             return;
         }
-        drinkBuilder.producer(producerStrategy);
+        drinkBuilder.factory(factory);
     }
 
-    private ProducerStrategy selectProducerForDrink() {
+    private Factory selectFactoryForDrink() {
         int choice = input.choice(
                 """
                         Выберите производителя для напитка:
@@ -387,8 +387,8 @@ public final class Menu {
                 EXIT, 2
         );
         return switch (choice) {
-            case 1 -> new QualityProducerStrategy();
-            case 2 -> new EconomyProducerStrategy();
+            case 1 -> new QualityFactory();
+            case 2 -> new EconomyFactory();
             default -> null;
         };
     }

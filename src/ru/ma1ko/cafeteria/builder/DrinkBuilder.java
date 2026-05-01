@@ -4,6 +4,7 @@
  */
 package ru.ma1ko.cafeteria.builder;
 
+import ru.ma1ko.cafeteria.factory.Factory;
 import ru.ma1ko.cafeteria.decorator.BaseDrink;
 import ru.ma1ko.cafeteria.decorator.Drink;
 import ru.ma1ko.cafeteria.decorator.Juice;
@@ -12,14 +13,13 @@ import ru.ma1ko.cafeteria.decorator.Sweetener;
 import ru.ma1ko.cafeteria.decorator.Syrup;
 import ru.ma1ko.cafeteria.domain.Area;
 import ru.ma1ko.cafeteria.domain.DrinkType;
-import ru.ma1ko.cafeteria.strategy.ProducerStrategy;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public final class DrinkBuilder {
     private String name;
-    private ProducerStrategy producerStrategy;
+    private Factory factory;
     private Area area;
     private BigDecimal cost = BigDecimal.ZERO;
     private String details = "";
@@ -45,18 +45,14 @@ public final class DrinkBuilder {
         return this;
     }
 
-    public DrinkBuilder producer(ProducerStrategy producerStrategy) {
-        this.producerStrategy = Objects.requireNonNull(producerStrategy, "producerStrategy");
+    public DrinkBuilder factory(Factory factory) {
+        this.factory = Objects.requireNonNull(factory, "factory");
         return this;
     }
 
     public DrinkBuilder sugars(int count) {
         this.sugarCount = Math.max(0, count);
         return this;
-    }
-
-    public DrinkBuilder sugar(int count) {
-        return sugars(count);
     }
 
     public DrinkBuilder sweetener(int count) {
@@ -80,9 +76,10 @@ public final class DrinkBuilder {
             throw new IllegalStateException("Drink type is not set");
         }
 
-        BigDecimal finalCost = producerStrategy == null ? cost : producerStrategy.adjustCost(cost);
-        String producerName = producerStrategy == null ? "" : producerStrategy.producerName();
-        Drink drink = new BaseDrink(name, producerName, area, finalCost, details);
+        Drink drink = factory == null
+                ? new BaseDrink(name, "", area, cost, details)
+                : factory.create(name, area, cost);
+
         if (juiceFlavor != null && !juiceFlavor.isBlank()) {
             drink = new Juice(drink, juiceFlavor);
         }
@@ -105,7 +102,7 @@ public final class DrinkBuilder {
         area = null;
         cost = BigDecimal.ZERO;
         details = "";
-        producerStrategy = null;
+        factory = null;
         sugarCount = 0;
         sweetenerCount = 0;
         syrupFlavor = null;

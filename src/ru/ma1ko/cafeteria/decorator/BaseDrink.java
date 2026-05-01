@@ -56,8 +56,4 @@ public class BaseDrink implements Drink {
         return name + " — " + details;
     }
 
-    @Override
-    public Drink addSugar() {
-        return new Sugar(this);
-    }
 }

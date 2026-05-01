@@ -6,7 +6,9 @@ package ru.ma1ko.cafeteria.factory;
 
 import ru.ma1ko.cafeteria.decorator.BaseDrink;
 import ru.ma1ko.cafeteria.decorator.Drink;
-import ru.ma1ko.cafeteria.domain.DrinkType;
+import ru.ma1ko.cafeteria.domain.Area;
+
+import java.math.BigDecimal;
 
 public final class QualityFactory implements Factory {
     @Override
@@ -15,7 +17,7 @@ public final class QualityFactory implements Factory {
     }
 
     @Override
-    public Drink create(DrinkType type) {
-        return new BaseDrink(type.displayName(), producerName(), type.area(), type.cost().add(new java.math.BigDecimal("15.00")));
+    public Drink create(String name, Area area, BigDecimal cost) {
+        return new BaseDrink(name, producerName(), area, cost.add(new BigDecimal("15.00")));
     }
 }

@@ -18,6 +18,4 @@ public interface Drink {
     BigDecimal cost();
 
     String description();
-
-    Drink addSugar();
 }
