@@ -5,8 +5,6 @@
 package ru.ma1ko.cafeteria.domain;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public enum DrinkType {
     CAPPUCCINO("Капучино", Area.COFFEE, new BigDecimal("45.00")),

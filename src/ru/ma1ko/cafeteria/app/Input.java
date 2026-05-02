@@ -14,24 +14,24 @@ public final class Input {
         this.scanner = Objects.requireNonNull(scanner, "scanner");
     }
 
-    public String line(String prompt) {
-        System.out.println(prompt);
-        return scanner.nextLine().trim();
-    }
-
     public int choice(String prompt, int min, int max) {
         while (true) {
             System.out.println(prompt);
             String raw = scanner.nextLine().trim();
+            if (raw.isEmpty()) {
+                System.out.println("Пустой ввод. Попробуйте ещё раз.");
+                continue;
+            }
             try {
                 int value = Integer.parseInt(raw);
-                if (value >= min && value <= max) {
-                    return value;
+                if (value < min || value > max) {
+                    System.out.printf("Число вне диапазона (%d–%d).%n", min, max);
+                    continue;
                 }
-            } catch (NumberFormatException ignored) {
-                // fall through
+                return value;
+            } catch (NumberFormatException e) {
+                System.out.println("Введите корректное число.");
             }
-            System.out.printf("Введите число от %d до %d.%n", min, max);
         }
     }
 }

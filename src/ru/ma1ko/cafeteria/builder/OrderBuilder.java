@@ -6,14 +6,12 @@ package ru.ma1ko.cafeteria.builder;
 
 import ru.ma1ko.cafeteria.composite.Group;
 import ru.ma1ko.cafeteria.composite.Item;
-import ru.ma1ko.cafeteria.composite.Order;
 import ru.ma1ko.cafeteria.decorator.Drink;
 import ru.ma1ko.cafeteria.domain.Area;
 import ru.ma1ko.cafeteria.observer.Observer;
 import ru.ma1ko.cafeteria.observer.Snapshot;
 import ru.ma1ko.cafeteria.strategy.PriceStrategy;
 import ru.ma1ko.cafeteria.strategy.StandardStrategy;
-import ru.ma1ko.cafeteria.util.Money;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,10 +57,6 @@ public final class OrderBuilder {
         });
         group.add(new Item(safeDrink));
         notifyObservers("Добавлен напиток: " + safeDrink.description());
-    }
-
-    public Order build() {
-        return new Order(root, strategy);
     }
 
     public BigDecimal totalCost() {

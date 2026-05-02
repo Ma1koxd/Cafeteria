@@ -9,10 +9,6 @@ public final class Sweetener extends DrinkWrap {
     private static final BigDecimal UNIT_COST = new BigDecimal("3.00");
     private final int count;
 
-    public Sweetener(Drink drink) {
-        this(drink, 1);
-    }
-
     public Sweetener(Drink drink, int count) {
         super(drink);
         this.count = Math.max(1, count);

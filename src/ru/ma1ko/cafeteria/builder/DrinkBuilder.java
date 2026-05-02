@@ -30,45 +30,38 @@ public final class DrinkBuilder {
     private int syrupCount;
     private String juiceFlavor;
 
-    public DrinkBuilder type(DrinkType type) {
+    public void type(DrinkType type) {
         Objects.requireNonNull(type, "type");
         this.name = type.displayName();
         this.area = type.area();
         this.cost = type.cost();
-        return this;
     }
 
-    public DrinkBuilder custom(String name, Area area, BigDecimal cost) {
+    public void custom(String name, Area area, BigDecimal cost) {
         this.name = Objects.requireNonNull(name, "name");
         this.area = Objects.requireNonNull(area, "area");
         this.cost = Objects.requireNonNull(cost, "cost");
-        return this;
     }
 
-    public DrinkBuilder factory(Factory factory) {
+    public void factory(Factory factory) {
         this.factory = Objects.requireNonNull(factory, "factory");
-        return this;
     }
 
-    public DrinkBuilder sugars(int count) {
+    public void sugars(int count) {
         this.sugarCount = Math.max(0, count);
-        return this;
     }
 
-    public DrinkBuilder sweetener(int count) {
+    public void sweetener(int count) {
         this.sweetenerCount = Math.max(0, count);
-        return this;
     }
 
-    public DrinkBuilder syrup(String flavor, int count) {
+    public void syrup(String flavor, int count) {
         this.syrupFlavor = flavor == null ? null : flavor.trim();
         this.syrupCount = Math.max(0, count);
-        return this;
     }
 
-    public DrinkBuilder juice(String flavor) {
+    public void juice(String flavor) {
         this.juiceFlavor = flavor == null ? null : flavor.trim();
-        return this;
     }
 
     public Drink build() {
