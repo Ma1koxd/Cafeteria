@@ -5,7 +5,7 @@
 package ru.ma1ko.cafeteria.builder;
 
 import ru.ma1ko.cafeteria.factory.Factory;
-import ru.ma1ko.cafeteria.decorator.BaseDrink;
+import ru.ma1ko.cafeteria.factory.EconomyFactory;
 import ru.ma1ko.cafeteria.decorator.Drink;
 import ru.ma1ko.cafeteria.decorator.Juice;
 import ru.ma1ko.cafeteria.decorator.Sugar;
@@ -19,10 +19,9 @@ import java.util.Objects;
 
 public final class DrinkBuilder {
     private String name;
-    private Factory factory;
+    private Factory factory = new EconomyFactory();
     private Area area;
     private BigDecimal cost = BigDecimal.ZERO;
-    private String details = "";
 
     private int sugarCount;
     private int sweetenerCount;
@@ -69,9 +68,7 @@ public final class DrinkBuilder {
             throw new IllegalStateException("Drink type is not set");
         }
 
-        Drink drink = factory == null
-                ? new BaseDrink(name, "", area, cost, details)
-                : factory.create(name, area, cost);
+        Drink drink = factory.create(name, area, cost);
 
         if (juiceFlavor != null && !juiceFlavor.isBlank()) {
             drink = new Juice(drink, juiceFlavor);
@@ -94,7 +91,6 @@ public final class DrinkBuilder {
         name = null;
         area = null;
         cost = BigDecimal.ZERO;
-        details = "";
         factory = null;
         sugarCount = 0;
         sweetenerCount = 0;
