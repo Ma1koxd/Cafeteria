@@ -9,7 +9,7 @@ import ru.ma1ko.cafeteria.domain.Area;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public abstract class DrinkWrap implements Drink {
+public class DrinkWrap implements Drink {
     private final Drink drink;
 
     protected DrinkWrap(Drink drink) {
