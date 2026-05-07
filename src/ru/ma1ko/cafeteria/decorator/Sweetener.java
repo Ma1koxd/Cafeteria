@@ -3,6 +3,7 @@
  */
 package ru.ma1ko.cafeteria.decorator;
 
+import static ru.ma1ko.cafeteria.util.DrinkValidation.requireCount;
 import java.math.BigDecimal;
 
 public final class Sweetener extends DrinkWrap {
@@ -11,7 +12,7 @@ public final class Sweetener extends DrinkWrap {
 
     public Sweetener(Drink drink, int count) {
         super(drink);
-        this.count = Math.max(1, count);
+        this.count = requireCount(count, "Количество сахарозаменителя");
     }
 
     @Override

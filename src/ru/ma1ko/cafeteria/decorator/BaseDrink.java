@@ -14,18 +14,12 @@ public class BaseDrink implements Drink {
     private final String producer;
     private final Area area;
     private final BigDecimal cost;
-    private final String details;
 
     public BaseDrink(String name, String producer, Area area, BigDecimal cost) {
-        this(name, producer, area, cost, "");
-    }
-
-    public BaseDrink(String name, String producer, Area area, BigDecimal cost, String details) {
-        this.name = Objects.requireNonNull(name, "name");
+        this.name = Objects.requireNonNull(name, "Name is not set");
         this.producer = producer == null ? "" : producer.trim();
-        this.area = Objects.requireNonNull(area, "area");
-        this.cost = Objects.requireNonNull(cost, "cost");
-        this.details = details == null ? "" : details.trim();
+        this.area = Objects.requireNonNull(area, "Area is not set");
+        this.cost = Objects.requireNonNull(cost, "Cost is not set");
     }
 
     @Override
@@ -50,10 +44,7 @@ public class BaseDrink implements Drink {
 
     @Override
     public String description() {
-        if (details.isBlank()) {
-            return name;
-        }
-        return name + " — " + details;
+        return name;
     }
 
 }

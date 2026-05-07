@@ -4,8 +4,10 @@
  */
 package ru.ma1ko.cafeteria.builder;
 
-import ru.ma1ko.cafeteria.factory.Factory;
-import ru.ma1ko.cafeteria.factory.EconomyFactory;
+import ru.ma1ko.cafeteria.decorator.BaseDrink;
+import ru.ma1ko.cafeteria.domain.Producer;
+import static ru.ma1ko.cafeteria.util.DrinkValidation.requireCount;
+import static ru.ma1ko.cafeteria.util.DrinkValidation.requireNotBlank;
 import ru.ma1ko.cafeteria.decorator.Drink;
 import ru.ma1ko.cafeteria.decorator.Juice;
 import ru.ma1ko.cafeteria.decorator.Sugar;
@@ -19,7 +21,7 @@ import java.util.Objects;
 
 public final class DrinkBuilder {
     private String name;
-    private Factory factory = new EconomyFactory();
+    private Producer producer = Producer.ECONOMY;
     private Area area;
     private BigDecimal cost = BigDecimal.ZERO;
 
@@ -42,25 +44,25 @@ public final class DrinkBuilder {
         this.cost = Objects.requireNonNull(cost, "cost");
     }
 
-    public void factory(Factory factory) {
-        this.factory = Objects.requireNonNull(factory, "factory");
+    public void producer(Producer producer) {
+        this.producer = Objects.requireNonNull(producer, "Producer is not set");
     }
 
     public void sugars(int count) {
-        this.sugarCount = Math.max(0, count);
+        this.sugarCount = requireCount(count, "Количество сахара");
     }
 
     public void sweetener(int count) {
-        this.sweetenerCount = Math.max(0, count);
+        this.sweetenerCount = requireCount(count, "Количество сахарозаменителя");
     }
 
     public void syrup(String flavor, int count) {
-        this.syrupFlavor = flavor == null ? null : flavor.trim();
-        this.syrupCount = Math.max(0, count);
+        this.syrupFlavor = requireNotBlank(flavor, "Syrup flavor is not set");
+        this.syrupCount = requireCount(count, "Количество сиропа");
     }
 
     public void juice(String flavor) {
-        this.juiceFlavor = flavor == null ? null : flavor.trim();
+        this.juiceFlavor = requireNotBlank(flavor, "Juice flavor is not set");
     }
 
     public Drink build() {
@@ -68,7 +70,7 @@ public final class DrinkBuilder {
             throw new IllegalStateException("Drink type is not set");
         }
 
-        Drink drink = factory.create(name, area, cost);
+        Drink drink = new BaseDrink(name, producer.displayName(), area, producer.priceFor(cost));
 
         if (juiceFlavor != null && !juiceFlavor.isBlank()) {
             drink = new Juice(drink, juiceFlavor);
@@ -91,7 +93,7 @@ public final class DrinkBuilder {
         name = null;
         area = null;
         cost = BigDecimal.ZERO;
-        factory = null;
+        producer = Producer.ECONOMY;
         sugarCount = 0;
         sweetenerCount = 0;
         syrupFlavor = null;

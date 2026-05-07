@@ -4,6 +4,7 @@
 package ru.ma1ko.cafeteria.decorator;
 
 import java.math.BigDecimal;
+import static ru.ma1ko.cafeteria.util.DrinkValidation.requireCount;
 
 public final class Sugar extends DrinkWrap {
     private static final BigDecimal UNIT_COST = new BigDecimal("2.00");
@@ -11,7 +12,7 @@ public final class Sugar extends DrinkWrap {
 
     public Sugar(Drink drink, int count) {
         super(drink);
-        this.count = Math.max(1, count);
+        this.count = requireCount(count, "Количество сахара");
     }
 
     @Override

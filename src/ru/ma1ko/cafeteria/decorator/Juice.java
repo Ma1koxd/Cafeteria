@@ -4,7 +4,7 @@
 package ru.ma1ko.cafeteria.decorator;
 
 import java.math.BigDecimal;
-import java.util.Objects;
+import static ru.ma1ko.cafeteria.util.DrinkValidation.requireNotBlank;
 
 public final class Juice extends DrinkWrap {
     private static final BigDecimal UNIT_COST = new BigDecimal("8.00");
@@ -12,7 +12,7 @@ public final class Juice extends DrinkWrap {
 
     public Juice(Drink drink, String flavor) {
         super(drink);
-        this.flavor = Objects.requireNonNull(flavor, "flavor").trim();
+        this.flavor = requireNotBlank(flavor, "Juice flavor is not set");
     }
 
     @Override

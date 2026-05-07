@@ -9,8 +9,7 @@ public enum Area {
     MILKSHAKES("Милкшейки"),
     LEMONADE("Лимонады"),
     MATCHA("Матча"),
-    TEA("Чай"),
-    SYRUPS("Сиропы");
+    TEA("Чай");
 
     private final String displayName;
 

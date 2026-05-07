@@ -13,7 +13,7 @@ public abstract class DrinkWrap implements Drink {
     private final Drink drink;
 
     protected DrinkWrap(Drink drink) {
-        this.drink = Objects.requireNonNull(drink, "drink");
+        this.drink = Objects.requireNonNull(drink, "Drink is not set");
     }
 
     @Override

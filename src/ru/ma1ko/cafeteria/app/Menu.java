@@ -15,9 +15,7 @@ import ru.ma1ko.cafeteria.strategy.PriceStrategy;
 import ru.ma1ko.cafeteria.strategy.StandardStrategy;
 import ru.ma1ko.cafeteria.util.Limit;
 import ru.ma1ko.cafeteria.util.Money;
-import ru.ma1ko.cafeteria.factory.EconomyFactory;
-import ru.ma1ko.cafeteria.factory.Factory;
-import ru.ma1ko.cafeteria.factory.QualityFactory;
+import ru.ma1ko.cafeteria.domain.Producer;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -260,38 +258,36 @@ public final class Menu {
             milkExtra = new BigDecimal("4.00");
         }
 
-        addCustomDrink(
+        if (startCustomDrink(
                 matchaPrefix + " на " + milkName,
                 Area.MATCHA,
-                basePrice.add(milkExtra),
-                true,
-                false,
-                builder -> {
-                }
-        );
+                basePrice.add(milkExtra)
+                )) {
+            finishDrink(true, true);
+        }
     }
 
     private void addBumble() {
         int juice = input.choice("""
-                Бамбл:
-                1. Апельсиновый сок
-                2. Ананасовый сок
-                3. Вишнёвый сок
-                4. Гранатовый сок
-                0. Назад""",
+                        Бамбл:
+                        1. Апельсиновый сок
+                        2. Ананасовый сок
+                        3. Вишнёвый сок
+                        4. Гранатовый сок
+                        0. Назад""",
                 EXIT, 4);
         if (juice == EXIT) {
             return;
         }
         int syrup = input.choice("""
-                Сироп к бамблу:
-                1. Карамель
-                2. Солёная карамель
-                3. Вишня
-                4. Банан
-                5. Лесной орех
-                6. Шоколад
-                0. Без сиропа""",
+                        Сироп к бамблу:
+                        1. Карамель
+                        2. Солёная карамель
+                        3. Вишня
+                        4. Банан
+                        5. Лесной орех
+                        6. Шоколад
+                        0. Без сиропа""",
                 EXIT, 6);
 
         int syrupCount = 0;
@@ -299,50 +295,53 @@ public final class Menu {
             syrupCount = input.choice("Количество сиропа (1-10):", 1, Limit.MAX_SUGAR);
         }
 
-        final int selectedSyrup = syrup;
         final int selectedSyrupCount = syrupCount;
-        addCustomDrink(
-                "Бамбл",
-                Area.COFFEE,
-                new BigDecimal("62.00"),
-                true,
-                false,
-                builder -> {
-                    builder.juice(JUICE_OPTIONS.get(juice - 1));
-                    if (selectedSyrup != EXIT) {
-                        builder.syrup(SYRUP_OPTIONS.get(selectedSyrup - 1), selectedSyrupCount);
-                    }
-                }
-        );
+        if (startCustomDrink("Бамбл", Area.COFFEE, new BigDecimal("62.00"))) {
+        drinkBuilder.juice(JUICE_OPTIONS.get(juice - 1));
+        if (syrup != EXIT) {
+            drinkBuilder.syrup(SYRUP_OPTIONS.get(syrup - 1), selectedSyrupCount);
+        }
+
+        finishDrink(false, false);
+        }
     }
 
     private void addConfiguredDrink(DrinkType drinkType, boolean askProducer) {
         drinkBuilder.type(drinkType);
-        applyFactoryIfNeeded(askProducer);
-        configureSweetnessAndSyrup(true);
-        orderBuilder.addDrink(drinkBuilder.build());
+        if (!applyProducerIfNeeded(askProducer)) {
+            return;
+        }
+        finishDrink(true, true);
     }
 
-    private void addCustomDrink(String name, Area area, BigDecimal cost, boolean askProducer, boolean allowSweetener, java.util.function.Consumer<DrinkBuilder> customizer) {
+    private boolean startCustomDrink(String name, Area area, BigDecimal cost) {
         drinkBuilder.custom(name, area, cost);
-        applyFactoryIfNeeded(askProducer);
-        customizer.accept(drinkBuilder);
-        configureSweetnessAndSyrup(allowSweetener);
+        return applyProducerIfNeeded(true);
+    }
+
+    private void finishDrink(boolean allowSweetener, boolean askSyrup) {
+        configureSweetness(allowSweetener);
+        if (askSyrup) {
+            configureSyrup();
+        }
         orderBuilder.addDrink(drinkBuilder.build());
     }
 
-    private void applyFactoryIfNeeded(boolean askProducer) {
+
+    private boolean applyProducerIfNeeded(boolean askProducer) {
         if (!askProducer) {
-            return;
+            return true;
         }
-        Factory factory = selectFactoryForDrink();
-        if (factory == null) {
-            return;
+        Producer producer = selectProducerForDrink();
+        if (producer == null) {
+            return false;
         }
-        drinkBuilder.factory(factory);
+
+        drinkBuilder.producer(producer);
+        return true;
     }
 
-    private Factory selectFactoryForDrink() {
+    private Producer selectProducerForDrink() {
         int choice = input.choice(
                 """
                         Выберите производителя для напитка:
@@ -352,24 +351,24 @@ public final class Menu {
                 EXIT, 2
         );
         return switch (choice) {
-            case 1 -> new QualityFactory();
-            case 2 -> new EconomyFactory();
+            case 1 -> Producer.QUALITY;
+            case 2 -> Producer.ECONOMY;
             default -> null;
         };
     }
 
-    private void configureSweetnessAndSyrup(boolean allowSweetener) {
+    private void configureSweetness(boolean allowSweetener) {
         int sweetChoice = input.choice(
                 allowSweetener
                         ? """
-                        Добавить подсластитель?
-                        0. Нет
-                        1. Сахар
-                        2. Сахарозаменитель"""
+                    Добавить подсластитель?
+                    0. Нет
+                    1. Сахар
+                    2. Сахарозаменитель"""
                         : """
-                        Добавить сахар?
-                        0. Нет
-                        1. Сахар""",
+                    Добавить сахар?
+                    0. Нет
+                    1. Сахар""",
                 0,
                 allowSweetener ? 2 : 1
         );
@@ -381,7 +380,9 @@ public final class Menu {
             int count = input.choice("Количество сахарозаменителя (1-10):", 1, Limit.MAX_SUGAR);
             drinkBuilder.sweetener(count);
         }
+    }
 
+    private void configureSyrup() {
         int syrupChoice = input.choice(
                 """
                         Добавить сироп?
@@ -394,11 +395,13 @@ public final class Menu {
                         6. Шоколад""",
                 0, 6
         );
+
         if (syrupChoice != 0) {
             int count = input.choice("Количество сиропа (1-10):", 1, Limit.MAX_SUGAR);
             drinkBuilder.syrup(SYRUP_OPTIONS.get(syrupChoice - 1), count);
         }
     }
+
 
     private void addFixedDrink(String prompt, List<DrinkType> items, boolean askProducer) {
         int choice = input.choice(prompt, EXIT, items.size());
