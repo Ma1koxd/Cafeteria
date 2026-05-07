@@ -19,7 +19,7 @@ import ru.ma1ko.cafeteria.domain.DrinkType;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public final class DrinkBuilder {
+public class DrinkBuilder {
     private String name;
     private Producer producer = Producer.ECONOMY;
     private Area area;

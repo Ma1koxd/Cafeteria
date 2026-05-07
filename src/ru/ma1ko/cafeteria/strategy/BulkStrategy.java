@@ -4,13 +4,17 @@
  */
 package ru.ma1ko.cafeteria.strategy;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.ma1ko.cafeteria.composite.Node;
 import ru.ma1ko.cafeteria.util.Limit;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public final class BulkStrategy implements PriceStrategy {
+@Component("bulkStrategy")
+@Scope("singleton")
+public class BulkStrategy implements PriceStrategy {
     private static final BigDecimal DISCOUNT = new BigDecimal("0.10");
 
     @Override

@@ -11,7 +11,6 @@ import ru.ma1ko.cafeteria.domain.Area;
 import ru.ma1ko.cafeteria.observer.Observer;
 import ru.ma1ko.cafeteria.observer.Snapshot;
 import ru.ma1ko.cafeteria.strategy.PriceStrategy;
-import ru.ma1ko.cafeteria.strategy.StandardStrategy;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,21 +18,20 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 
-public final class OrderBuilder {
+public class OrderBuilder {
     private final Group root;
     private final EnumMap<Area, Group> areaToGroupMap;
     private final List<Observer> observerList;
+    private final PriceStrategy defaultStrategy;
     private PriceStrategy strategy;
 
-    public OrderBuilder() {
+    public OrderBuilder(PriceStrategy defaultStrategy,
+                        List<Observer> observerList) {
         this.root = new Group("Заказ");
         this.areaToGroupMap = new EnumMap<>(Area.class);
-        this.observerList = new ArrayList<>();
-        this.strategy = new StandardStrategy();
-    }
-
-    public void addObserver(Observer observer) {
-        observerList.add(Objects.requireNonNull(observer, "observer"));
+        this.observerList = new ArrayList<>(observerList);
+        this.defaultStrategy = Objects.requireNonNull(defaultStrategy, "defaultStrategy");
+        this.strategy = this.defaultStrategy;
     }
 
     public void setStrategy(PriceStrategy newStrategy) {
@@ -44,7 +42,7 @@ public final class OrderBuilder {
     public void reset() {
         root.clear();
         areaToGroupMap.clear();
-        strategy = new StandardStrategy();
+        strategy = defaultStrategy;
         notifyObservers("Заказ сброшен");
     }
 

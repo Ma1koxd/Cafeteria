@@ -4,14 +4,28 @@
  */
 package ru.ma1ko.cafeteria.app;
 
-import java.util.Objects;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
-public final class Input {
-    private final Scanner scanner;
+@Component
+@Scope("singleton")
+public class Input {
+    private Scanner scanner;
 
-    public Input(Scanner scanner) {
-        this.scanner = Objects.requireNonNull(scanner, "scanner");
+    @PostConstruct
+    public void init() {
+        scanner = new Scanner(System.in);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 
     public int choice(String prompt, int min, int max) {

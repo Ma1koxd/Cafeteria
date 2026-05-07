@@ -4,12 +4,18 @@
  */
 package ru.ma1ko.cafeteria.strategy;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.ma1ko.cafeteria.composite.Node;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public final class StandardStrategy implements PriceStrategy {
+@Component("standardStrategy")
+@Primary
+@Scope("singleton")
+public class StandardStrategy implements PriceStrategy {
     @Override
     public String name() {
         return "Стандартная";

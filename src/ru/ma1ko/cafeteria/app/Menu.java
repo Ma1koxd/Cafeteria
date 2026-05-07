@@ -4,15 +4,16 @@
  */
 package ru.ma1ko.cafeteria.app;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.ma1ko.cafeteria.builder.DrinkBuilder;
 import ru.ma1ko.cafeteria.builder.OrderBuilder;
 import ru.ma1ko.cafeteria.domain.Area;
 import ru.ma1ko.cafeteria.domain.DrinkType;
-import ru.ma1ko.cafeteria.observer.CostObs;
-import ru.ma1ko.cafeteria.observer.DetailObs;
+import ru.ma1ko.cafeteria.observer.Observer;
 import ru.ma1ko.cafeteria.strategy.BulkStrategy;
 import ru.ma1ko.cafeteria.strategy.PriceStrategy;
-import ru.ma1ko.cafeteria.strategy.StandardStrategy;
 import ru.ma1ko.cafeteria.util.Limit;
 import ru.ma1ko.cafeteria.util.Money;
 import ru.ma1ko.cafeteria.domain.Producer;
@@ -20,9 +21,10 @@ import ru.ma1ko.cafeteria.domain.Producer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Scanner;
 
-public final class Menu {
+@Component
+@Scope("prototype")
+public class Menu {
     private static final int EXIT = 0;
     private static final int ADD = 1;
     private static final int CHANGE_PRICE = 2;
@@ -48,13 +50,19 @@ public final class Menu {
     private final Input input;
     private final OrderBuilder orderBuilder;
     private final DrinkBuilder drinkBuilder;
+    private final PriceStrategy standardStrategy;
+    private final PriceStrategy bulkStrategy;
 
-    public Menu(Scanner scanner) {
-        this.input = new Input(Objects.requireNonNull(scanner, "scanner"));
-        this.orderBuilder = new OrderBuilder();
+    @Autowired
+    public Menu(Input input,
+                PriceStrategy standardStrategy,
+                BulkStrategy bulkStrategy,
+                List<Observer> observerList) {
+        this.input = Objects.requireNonNull(input, "input");
+        this.standardStrategy = Objects.requireNonNull(standardStrategy, "standardStrategy");
+        this.bulkStrategy = Objects.requireNonNull(bulkStrategy, "bulkStrategy");
+        this.orderBuilder = new OrderBuilder(this.standardStrategy, observerList);
         this.drinkBuilder = new DrinkBuilder();
-        this.orderBuilder.addObserver(new DetailObs());
-        this.orderBuilder.addObserver(new CostObs());
     }
 
     public void run() {
@@ -262,7 +270,7 @@ public final class Menu {
                 matchaPrefix + " на " + milkName,
                 Area.MATCHA,
                 basePrice.add(milkExtra)
-                )) {
+        )) {
             finishDrink(true, true);
         }
     }
@@ -297,12 +305,12 @@ public final class Menu {
 
         final int selectedSyrupCount = syrupCount;
         if (startCustomDrink("Бамбл", Area.COFFEE, new BigDecimal("62.00"))) {
-        drinkBuilder.juice(JUICE_OPTIONS.get(juice - 1));
-        if (syrup != EXIT) {
-            drinkBuilder.syrup(SYRUP_OPTIONS.get(syrup - 1), selectedSyrupCount);
-        }
+            drinkBuilder.juice(JUICE_OPTIONS.get(juice - 1));
+            if (syrup != EXIT) {
+                drinkBuilder.syrup(SYRUP_OPTIONS.get(syrup - 1), selectedSyrupCount);
+            }
 
-        finishDrink(false, false);
+            finishDrink(false, false);
         }
     }
 
@@ -438,11 +446,7 @@ public final class Menu {
                         0. Назад""",
                 EXIT, 2
         );
-        return switch (choice) {
-            case 2 -> new BulkStrategy();
-            case 1 -> new StandardStrategy();
-            default -> new StandardStrategy();
-        };
+        return choice == 2 ? bulkStrategy : standardStrategy;
     }
 
     private void printMain() {

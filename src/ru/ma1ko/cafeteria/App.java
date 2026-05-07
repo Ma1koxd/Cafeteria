@@ -4,17 +4,18 @@
  */
 package ru.ma1ko.cafeteria;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.ma1ko.cafeteria.app.Menu;
-
-import java.util.Scanner;
+import ru.ma1ko.cafeteria.config.AppConfig;
 
 public final class App {
     private App() {
     }
 
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            new Menu(scanner).run();
+        try (AnnotationConfigApplicationContext context =
+                     new AnnotationConfigApplicationContext(AppConfig.class)) {
+            context.getBean(Menu.class).run();
         }
     }
 }
