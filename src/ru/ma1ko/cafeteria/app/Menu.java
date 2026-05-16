@@ -6,6 +6,7 @@ package ru.ma1ko.cafeteria.app;
 
 import ru.ma1ko.cafeteria.builder.DrinkBuilder;
 import ru.ma1ko.cafeteria.builder.OrderBuilder;
+import ru.ma1ko.cafeteria.concurrency.CafeteriaConcurrencyDemo;
 import ru.ma1ko.cafeteria.domain.Area;
 import ru.ma1ko.cafeteria.domain.DrinkType;
 import ru.ma1ko.cafeteria.observer.CostObs;
@@ -28,6 +29,7 @@ public final class Menu {
     private static final int CHANGE_PRICE = 2;
     private static final int SHOW = 3;
     private static final int FINISH = 4;
+    private static final int CONCURRENCY = 5;
 
     private static final List<String> SYRUP_OPTIONS = List.of(
             "Карамель",
@@ -62,12 +64,13 @@ public final class Menu {
         boolean running = true;
         while (running) {
             printMain();
-            int choice = input.choice("Введите пункт меню:", EXIT, FINISH);
+            int choice = input.choice("Введите пункт меню:", EXIT, CONCURRENCY);
             switch (choice) {
                 case ADD -> addDrink();
                 case CHANGE_PRICE -> orderBuilder.setStrategy(selectPriceStrategy());
                 case SHOW -> showCurrent();
                 case FINISH -> finish();
+                case CONCURRENCY -> CafeteriaConcurrencyDemo.runDemo();
                 case EXIT -> running = false;
                 default -> {
                 }
@@ -262,7 +265,7 @@ public final class Menu {
                 matchaPrefix + " на " + milkName,
                 Area.MATCHA,
                 basePrice.add(milkExtra)
-                )) {
+        )) {
             finishDrink(true, true);
         }
     }
@@ -297,12 +300,12 @@ public final class Menu {
 
         final int selectedSyrupCount = syrupCount;
         if (startCustomDrink("Бамбл", Area.COFFEE, new BigDecimal("62.00"))) {
-        drinkBuilder.juice(JUICE_OPTIONS.get(juice - 1));
-        if (syrup != EXIT) {
-            drinkBuilder.syrup(SYRUP_OPTIONS.get(syrup - 1), selectedSyrupCount);
-        }
+            drinkBuilder.juice(JUICE_OPTIONS.get(juice - 1));
+            if (syrup != EXIT) {
+                drinkBuilder.syrup(SYRUP_OPTIONS.get(syrup - 1), selectedSyrupCount);
+            }
 
-        finishDrink(false, false);
+            finishDrink(false, false);
         }
     }
 
@@ -452,6 +455,7 @@ public final class Menu {
         System.out.println("2. Изменить стратегию расчёта");
         System.out.println("3. Показать заказ");
         System.out.println("4. Оформить заказ");
+        System.out.println("5. Многопоточная обработка заказов");
         System.out.println("0. Выход");
     }
 }
